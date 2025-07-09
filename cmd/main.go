@@ -2,19 +2,29 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	oblioapi "github.com/obliosoftware/oblioapigo"
 )
 
 func main() {
-	api := oblioapi.Api{
-		ClientID:     os.Getenv("OBLIO_CLIENT_ID"),
-		ClientSecret: os.Getenv("OBLIO_CLIENT_SECRET"),
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
 	}
+
+	api := oblioapi.Api{
+		TokenHandler: &oblioapi.TokenHandler{
+			ClientID:     os.Getenv("OBLIO_CLIENT_ID"),
+			ClientSecret: os.Getenv("OBLIO_CLIENT_SECRET"),
+		},
+	}
+
 	response, err := api.CreateDoc("invoice", oblioapi.Doc{
-		Cif: "1111",
+		Cif: os.Getenv("OBLIO_CIF"),
 		Client: oblioapi.Client{
 			Cif:          "",
 			Name:         "Irina Fabiola",

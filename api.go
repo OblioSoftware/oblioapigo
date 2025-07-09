@@ -34,6 +34,10 @@ func (v *AccessToken) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (v AccessToken) IsValid() bool {
+	return (v.RequestTime + v.RequestTime) > uint(time.Now().UnixMilli()/1000)
+}
+
 type Reaponse struct {
 	Status        int    `json:"status,omitempty"`
 	StatusMessage string `json:"statusMessage,omitempty"`
@@ -104,14 +108,20 @@ type Product struct {
 	Save        bool    `json:"save,omitempty"`
 }
 
-type Api struct {
-	ClientID     string
-	ClientSecret string
+type TokenHandlerInterface interface {
+	Get() (AccessToken, error)
 }
 
-func (a Api) GetAccessToken() (AccessToken, error) {
-	token := AccessToken{}
+type TokenHandler struct {
+	ClientID     string
+	ClientSecret string
+	AccessToken  AccessToken
+}
 
+func (a *TokenHandler) Get() (AccessToken, error) {
+	if a.AccessToken.IsValid() {
+		return a.AccessToken, nil
+	}
 	response, err := Request(http.MethodPost, "/api/authorize/token", Payload{
 		Type: "application/x-www-form-urlencoded",
 		Data: map[string]any{
@@ -120,22 +130,26 @@ func (a Api) GetAccessToken() (AccessToken, error) {
 		},
 	})
 	if err != nil {
-		return token, err
+		return a.AccessToken, err
 	}
 	data, err := ReadResponse(response)
 	if err != nil {
-		return token, err
+		return a.AccessToken, err
 	}
-	err = token.UnmarshalJSON(data)
+	err = a.AccessToken.UnmarshalJSON(data)
 	if err != nil {
-		return token, err
+		return a.AccessToken, err
 	}
 
-	return token, nil
+	return a.AccessToken, nil
+}
+
+type Api struct {
+	TokenHandler TokenHandlerInterface
 }
 
 func (a Api) CreateDoc(t string, d Doc) (*Reaponse, error) {
-	token, err := a.GetAccessToken()
+	token, err := a.TokenHandler.Get()
 	if err != nil {
 		return nil, err
 	}
