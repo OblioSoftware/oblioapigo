@@ -31,7 +31,6 @@ func (v *Payload) Get() io.Reader {
 			params.Add(i, v.(string))
 		}
 		p = []byte(params.Encode())
-		// fmt.Printf("params %d %+v\n", n, p)
 	default:
 		p, _ = json.Marshal(v.Data)
 	}
@@ -153,4 +152,12 @@ func BoolFromInterface(data ...interface{}) bool {
 	default:
 		return false
 	}
+}
+
+func Urlencode(data map[string]string) string {
+	params := url.Values{}
+	for i, v := range data {
+		params.Add(i, v)
+	}
+	return params.Encode()
 }

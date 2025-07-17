@@ -159,6 +159,23 @@ func (a Api) CreateDoc(t string, d Doc) (*Response, error) {
 		Type:        "application/json",
 		Data:        d,
 	})
+	return a.getResponse(response, err)
+}
+
+func (a Api) Nomenclature(t string, filters map[string]string) (*Response, error) {
+	token, err := a.TokenHandler.Get()
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := Request(http.MethodGet, "/api/nomenclature/"+t+"?"+Urlencode(filters), Payload{
+		AccessToken: &token,
+		Type:        "application/json",
+	})
+	return a.getResponse(response, err)
+}
+
+func (a Api) getResponse(response *http.Response, err error) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}

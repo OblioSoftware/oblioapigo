@@ -23,7 +23,16 @@ func main() {
 		},
 	}
 
-	response, err := api.CreateDoc("invoice", oblioapi.Doc{
+	response, err := api.Nomenclature("companies", map[string]string{})
+	fmt.Printf("companies response %+v %+v\n", response, err)
+
+	response, err = api.Nomenclature("clients", map[string]string{
+		"cif":       os.Getenv("OBLIO_CIF"),
+		"clientCif": "1111",
+	})
+	fmt.Printf("clients response %+v %+v\n", response, err)
+
+	response, err = api.CreateDoc("invoice", oblioapi.Doc{
 		Cif: os.Getenv("OBLIO_CIF"),
 		Client: oblioapi.Client{
 			Cif:          "",
@@ -61,5 +70,5 @@ func main() {
 			},
 		},
 	})
-	fmt.Printf("response %+v %+v\n", response, err)
+	fmt.Printf("doc response %+v %+v\n", response, err)
 }
