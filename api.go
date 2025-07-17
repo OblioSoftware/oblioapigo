@@ -38,7 +38,7 @@ func (v AccessToken) IsValid() bool {
 	return (v.RequestTime + v.RequestTime) > uint(time.Now().UnixMilli()/1000)
 }
 
-type Reaponse struct {
+type Response struct {
 	Status        int    `json:"status,omitempty"`
 	StatusMessage string `json:"statusMessage,omitempty"`
 	Data          any    `json:"data,omitempty"`
@@ -148,7 +148,7 @@ type Api struct {
 	TokenHandler TokenHandlerInterface
 }
 
-func (a Api) CreateDoc(t string, d Doc) (*Reaponse, error) {
+func (a Api) CreateDoc(t string, d Doc) (*Response, error) {
 	token, err := a.TokenHandler.Get()
 	if err != nil {
 		return nil, err
@@ -166,7 +166,7 @@ func (a Api) CreateDoc(t string, d Doc) (*Reaponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	res := Reaponse{}
+	res := Response{}
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return nil, err
