@@ -61,7 +61,7 @@ func main() {
 				MeasuringUnit:            "buc",
 				MeasuringUnitTranslation: "",
 				Currency:                 "RON",
-				VatPercentage:            19,
+				VatPercentage:            21,
 				VatIncluded:              true,
 				Quantity:                 1,
 				ProductType:              "Serviciu",
